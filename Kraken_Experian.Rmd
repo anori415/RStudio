@@ -1,0 +1,38 @@
+---
+title: "Kraken_ReverseAppend_Analysis"
+author: "Austin Noring"
+date: "9/12/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Experian Analysis
+
+This section summarizes the RStudio analysis conducted on the reverse appended data from Experian. The data set used for this analysis consisted of 8577 customers and 22 variables. 13 of the variables were purchased from Experian and describe various aspects about our customers. Within the data set there were two distinct groups, Tier 1 and Tier 9 customers which represent the best and worst customers (4580 Tier 9 Customers and 3997 Tier 1 Customers).   <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r echo=FALSE}
+ggplot(gather(numeric.data), aes(value)) + 
+  geom_histogram(bins = 16) + 
+  facet_wrap(~key, scales = 'free_x')
+```
+
+# Questions
+
+Based on the reverse appended data from Experian does it suggest that Tier 1 and Tier 9 Customers are distinctly different?
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+How are the variables purchased from Experian related to one another? 
+
+
+What variables purchased from Experian have the highest informative value?
+
+
+Based on the purchased data what atttributes are characteristic to our top and bottom tier customers? 
