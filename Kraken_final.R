@@ -179,9 +179,8 @@ boruta_signif2 <- names(boruta_output2$finalDecision[boruta_output2$finalDecisio
 
 ####Information value and Weight of evidence####
 
-#Data#
+#Data
 inputData1<-data
-
 #Data Preparation
 names(inputData1) <- c("Tier","TierClass","MosaicHousehold","SubGroup","Group","Children","ProfiabilityScore","DirectMailResponder","DwellingType","HouseholdIncome","HomeValue","Gender","Education","LengthResidence","MaritalStatus","Occupation","State","TCV","MembershipLevel","Days","ProductTCV","Count")  # assign names
 numeric.data <- as.data.frame(sapply(inputData1,as.numeric))
@@ -212,3 +211,59 @@ iv_df <- iv.mult(inputData3, y="Tier", summary=TRUE, verbose=TRUE) # information
 iv <- iv.mult(inputData3, y="Tier", summary=FALSE, verbose=TRUE) # information values not summarized
 iv_df_plot<-iv.plot.summary(iv_df) # plot of the information value summary
 inputData3_iv <- iv.replace.woe(inputData3, iv, verbose=TRUE)  # add woe variables to original data frame.
+
+#Data
+exp<-read.csv("Experian.csv",header = T, na.strings = c("","NA"))
+#Data Preparation
+names(exp) <- c("AccountID","SubGroup","MosaicHousehold","Tier","Group","Children","ProfiabilityScore","DirectMailResponder","DwellingType","HouseholdIncome","HomeValue","Gender","Education","LengthResidence","MaritalStatus","Occupation","State","TierClass","TCV","MembershipLevel","Days","ProductTCV")  # assign names
+exp.num <- as.data.frame(sapply(exp,as.numeric))
+exp.num$Tier <- as.factor(exp$Tier)
+exp.num$AccountID <- as.factor(exp$AccountID)
+sapply(exp.num,function(x) sum(is.na(x)))
+exp.num<-subset(exp.num,select=c("AccountID","Tier","TierClass","TCV","MembershipLevel","Days","ProductTCV","Group","SubGroup","MosaicHousehold","Children","ProfiabilityScore","DirectMailResponder","DwellingType","HouseholdIncome","HomeValue","Gender","Education","LengthResidence","MaritalStatus","Occupation","State"))  # assign names
+
+#Impute Missing Data
+apply(exp.num, 2, p)
+#Impute
+impute <- mice(exp.num[,9:22], m=3, seed = 123 ) # ignore columns that do not have any predictive power
+#Complete Data
+exp.num2 <- complete(impute, 1) # replacing data with implecation option (1, 2, or 3 if m = 3)
+exp.num2$Tier <- as.factor(exp.num$Tier)
+exp.num2$AccountID <- as.factor(exp.num$AccountID)
+exp.num2<-exp.num2[,-c(1)]
+
+#Analysis
+iv_df2 <- iv.mult(exp.num2, y="Tier", summary=TRUE, verbose=TRUE) # information values summarized
+iv2 <- iv.mult(exp.num2, y="Tier", summary=FALSE, verbose=TRUE) # information values not summarized
+iv_df2_plot<-iv.plot.summary(iv_df2) # plot of the information value summary
+exp.num2_iv <- iv.replace.woe(exp.num2, iv, verbose=TRUE)  # add woe variables to original data frame.
+
+complete<-merge(exp.num2_iv, exp, by="AccountID")
+
+
+
+####Futher Analysis####
+
+####PCA Analysis####
+#When there are too many variables in your data, sometimes, reducing them 
+#to few principal components that could explain a major portion of variation 
+#in data is preferred. These principal components can be used for further 
+#model building, clustering etc.
+
+####Decision Tree####
+#Decision trees can give a clear picture of the underlying structure 
+#in data and relationships between variables. They are an excellent 
+#tool for data inspection and to understand the interactions between variables.
+
+####Advanced Linear Regression####
+#Advanced Linear Regression exercise will allow us to build all statistically valid models, 
+#see their prediction accuracy, cross-validate on random samples, compare all important 
+#diagnostic parameters from one place and finally pick the best one that suits our case
+
+####LDA and QDA####
+#Linear discriminant analysis tries to find a separation line (linear) that best divides (discriminates)
+#the binary classes in your data with maximum accuracy. Initially, for building the LDA model, 
+#a training data has to be provided along with the class of each data-point as the response 
+#variable (Response). Once the model is built, you can use this model, to test or predict on 
+#data where the class of response is unknown.
+
